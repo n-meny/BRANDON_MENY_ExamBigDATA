@@ -1,28 +1,27 @@
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
-class MovieTagCount(MRJob):
+class UserTagCount(MRJob):
 
     def steps(self):
         return [
-            MRStep(mapper=self.mapper_get_movie_tags,
+            MRStep(mapper=self.mapper_get_user_tags,
                    reducer=self.reducer_count_tags)
         ]
 
-    def mapper_get_movie_tags(self, _, line):
+    def mapper_get_user_tags(self, _, line):
         try:
             if line.startswith("userId"):
                 return
             fields = line.strip().split(',')
             if len(fields) >= 3:
-                movieId = fields[1]
-                yield movieId, 1
+                userId = fields[0]
+                yield userId, 1
         except Exception as e:
-            # Affiche l'erreur dans les logs de sortie standard
             self.stderr.write(f"Erreur dans le mapper: {e}\n")
 
-    def reducer_count_tags(self, movieId, counts):
-        yield movieId, sum(counts)
+    def reducer_count_tags(self, userId, counts):
+        yield userId, sum(counts)
 
 if __name__ == '__main__':
-    MovieTagCount.run()
+    UserTagCount.run()
