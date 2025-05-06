@@ -2,8 +2,6 @@
 
 from mrjob.job import MRJob
 from mrjob.step import MRStep
-import csv
-from io import StringIO
 
 class MovieTagCounter(MRJob):
 
@@ -16,15 +14,13 @@ class MovieTagCounter(MRJob):
     def mapper_get_movie_tags(self, _, line):
         if line.startswith("userId"):
             return
-        # Utilisation de csv.reader pour gérer les virgules dans les champs
         try:
-            reader = csv.reader(StringIO(line))
-            fields = next(reader)
-            if len(fields) >= 2:
+            fields = line.strip().split(',')
+            if len(fields) >= 3:
                 movieID = fields[1]
                 yield movieID, 1
         except Exception as e:
-            # Optionnel : log si nécessaire
+            # Ligne ignorée si erreur
             pass
 
     def reducer_count_tags(self, movieID, counts):
