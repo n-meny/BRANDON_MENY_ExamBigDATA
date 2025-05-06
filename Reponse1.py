@@ -14,9 +14,9 @@ class UserTagCount(MRJob):
             if line.startswith("userId"):
                 return
             fields = line.strip().split(',')
-            if len(fields) >= 3:
-                userId = fields[0]
-                yield userId, 1
+         
+            userId = fields[0]
+            yield userId, 1
         except Exception as e:
             self.stderr.write(f"Erreur dans le mapper: {e}\n")
 
