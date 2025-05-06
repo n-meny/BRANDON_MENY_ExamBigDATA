@@ -2,8 +2,6 @@
 
 from mrjob.job import MRJob
 from mrjob.step import MRStep
-import csv
-from io import StringIO
 
 class UserTagCounter(MRJob):
 
@@ -17,14 +15,12 @@ class UserTagCounter(MRJob):
         if line.startswith("userId"):
             return
         try:
-            # Utilise csv.reader pour gérer les champs avec virgules ou guillemets
-            reader = csv.reader(StringIO(line))
-            fields = next(reader)
+            fields = line.strip().split(',')
             if len(fields) >= 1:
                 userID = fields[0]
                 yield userID, 1
         except Exception:
-            pass  # Optionnel : log des erreurs
+            pass  # Ligne ignorée si erreur
 
     def reducer_count_tags(self, userID, counts):
         yield userID, sum(counts)
